@@ -14,7 +14,7 @@ A modern, responsive payment interface built with **React**, **TypeScript**, **R
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/hpp-app.git
+git clone https://github.com/BogdanKotarlic/hpp-app.git
 cd hpp-app
 npm install
 ```

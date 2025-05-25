@@ -1,46 +1,40 @@
-# Getting Started with Create React App
+# Hosted Payment Page (HPP) App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive payment interface built with **React**, **TypeScript**, **React Query**, and **Tailwind CSS**. Users can accept quotes, select a currency, view payment details, and complete payments via crypto.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Quote acceptance with currency selection
+- Live payment summary with countdown
+- Expiry handling and redirection
+- QR code and clipboard support
+- Clean, Figma-matched UI
+- Type-safe and testable architecture
 
-### `npm start`
+## Installation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+git clone https://github.com/YOUR_USERNAME/hpp-app.git
+cd hpp-app
+npm install
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Running the App
 
-### `npm test`
+```bash
+npm start
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs on http://localhost:3000
 
-### `npm run build`
+## Running Tests
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+npm test
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## App Routes
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- /payin/:uuid → Accept Quote page
+- /payin/:uuid/pay → Payment page (with QR code, address)
+- /payin/:uuid/expired → Expired page

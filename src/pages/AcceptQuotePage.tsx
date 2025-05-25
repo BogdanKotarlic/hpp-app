@@ -3,8 +3,9 @@ import {
   acceptPaymentSummary,
   updatePaymentSummary,
 } from "../api/paymentActions";
+import FullScreenSpinner from "../components/FullScreenSpinner";
 import QuoteCard from "../components/QuoteCard";
-import { CURRENCIES, ROUTES } from "../constants";
+import { CURRENCIES, CURRENCY_LABELS, ROUTES } from "../constants";
 import { useCountdown } from "../hooks/useCountdown";
 import { PaymentSummary } from "../types/payment";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -59,54 +60,97 @@ export default function AcceptQuotePage() {
     updateMutation.mutate(currency);
   };
 
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  const handleConfirm = () => {
+    if (hasExpired) {
+      navigate(ROUTES.expired(uuid!));
+      return;
+    }
+
+    acceptMutation.mutate();
+  };
+
+  if (isLoading) return <FullScreenSpinner />;
   if (isError)
     return <p className="text-center text-red-500">Something went wrong.</p>;
 
   return (
     <QuoteCard>
-      <h2 className="text-lg font-semibold mb-2">Accept Quote</h2>
-      <div className="text-center mb-4">
-        <p className="text-sm text-gray-500">{data?.merchantDisplayName}</p>
-        <p className="text-3xl font-bold">
-          {data?.displayCurrency.amount} {data?.displayCurrency.currency}
+      <div className="text-center mb-4 text-[#0A1628]">
+        <p className="font-medium text-[20px] leading-[28px]">
+          {data?.merchantDisplayName}
         </p>
-        <p className="text-sm text-gray-500">
-          Reference: <strong>{data?.reference}</strong>
+
+        <div className="flex items-baseline justify-center gap-1">
+          <span className="text-[32px] leading-[40px] font-semibold">
+            {data?.displayCurrency.amount}
+          </span>
+          <span className="text-[20px] leading-[40px] font-semibold">
+            {data?.displayCurrency.currency}
+          </span>
+        </div>
+
+        <p className="text-[14px] leading-[22px] text-[#556877] mt-4">
+          For reference number:{" "}
+          <span className="font-medium text-[#0A1628]">{data?.reference}</span>
         </p>
       </div>
 
       <div className="space-y-4">
-        <select
-          className="w-full border px-4 py-2 rounded"
-          value={selectedCurrency}
-          onChange={handleCurrencyChange}
-        >
-          <option value="">Select Currency</option>
-          {CURRENCIES.map((cur) => (
-            <option key={cur} value={cur}>
-              {cur}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-1">
+          <label
+            htmlFor="currency"
+            className="text-[14px] leading-[22px] text-[#0A1628] block"
+          >
+            Pay with
+          </label>
+          <select
+            className="w-full h-14 px-4 py-4 rounded border border-gray-300 text-[#0A1628] text-sm"
+            value={selectedCurrency}
+            onChange={handleCurrencyChange}
+          >
+            <option value="">Select Currency</option>
+            {CURRENCIES.map((cur) => (
+              <option key={cur} value={cur}>
+                {CURRENCY_LABELS[cur]}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        {selectedCurrency && !!data?.paidCurrency?.amount && (
+        {selectedCurrency && (
           <>
             <div className="flex justify-between text-sm">
-              <span>Amount due</span>
-              <span>
-                {data.paidCurrency.amount} {data.paidCurrency.currency}
+              <span className="text-[#556877]">Amount due</span>
+              <span className="min-w-[80px] flex items-center justify-end">
+                {updateMutation.isPending ? (
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-[#3F53DD] border-t-transparent" />
+                ) : (
+                  <>
+                    {data?.paidCurrency.amount} {data?.paidCurrency.currency}
+                  </>
+                )}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Quoted price expires in</span>
-              <span>{expiryCountdown}</span>
+              <span className="text-[#556877]">Quoted price expires in</span>
+              <span className="min-w-[80px] flex items-center justify-end">
+                {updateMutation.isPending ? (
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-[#3F53DD] border-t-transparent" />
+                ) : (
+                  expiryCountdown
+                )}
+              </span>
             </div>
             <button
-              onClick={() => acceptMutation.mutate()}
-              className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded"
+              onClick={handleConfirm}
+              disabled={acceptMutation.isPending}
+              className={`w-full h-10 mt-4 px-4 rounded text-white ${
+                acceptMutation.isPending
+                  ? "bg-[#3F53DD]/70 cursor-not-allowed"
+                  : "bg-[#3F53DD] hover:bg-indigo-700"
+              }`}
             >
-              Confirm
+              {acceptMutation.isPending ? "Processing..." : "Confirm"}
             </button>
           </>
         )}

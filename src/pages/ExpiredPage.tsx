@@ -1,19 +1,20 @@
 import QuoteCard from "../components/QuoteCard";
+import { AlertTriangle } from "lucide-react";
 
 export default function ExpiredPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#EBEDF3] px-4">
-      <QuoteCard>
-        <h1 className="text-2xl font-bold text-red-600 mb-4 text-center">
-          Quote Expired
+    <QuoteCard>
+      <div className="flex flex-col items-center space-y-4 text-center text-[#0A1628] p-4">
+        <div className="bg-[#FF7051] rounded-full p-3">
+          <AlertTriangle className="text-white w-6 h-6" />
+        </div>
+        <h1 className="text-[20px] font-semibold leading-[28px]">
+          Payment details expired
         </h1>
-        <p className="text-gray-700 mb-2 text-center">
-          The quote you were trying to access is no longer valid.
+        <p className="text-[#556877] text-[14px] leading-[22px] max-w-[280px]">
+          The payment details for your transaction have expired.
         </p>
-        <p className="text-gray-500 text-sm text-center">
-          Please go back to the merchant and generate a new one.
-        </p>
-      </QuoteCard>
-    </div>
+      </div>
+    </QuoteCard>
   );
 }

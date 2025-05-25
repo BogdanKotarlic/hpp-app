@@ -1,6 +1,8 @@
 import { getPaymentSummary } from "../api/payment";
+import CopyText from "../components/CopyText";
+import FullScreenSpinner from "../components/FullScreenSpinner";
 import QuoteCard from "../components/QuoteCard";
-import { ROUTES } from "../constants";
+import { CURRENCY_LABELS, ROUTES } from "../constants";
 import { useCountdown } from "../hooks/useCountdown";
 import { PaymentSummary } from "../types/payment";
 import { useQuery } from "@tanstack/react-query";
@@ -23,56 +25,63 @@ export default function PayQuotePage() {
 
   useEffect(() => {
     if (!uuid || !data) return;
-
+    
     if (data.status === "EXPIRED" || hasExpired) {
       navigate(ROUTES.expired(uuid));
     }
   }, [data, navigate, uuid, hasExpired]);
 
-  const copyToClipboard = (value: string) => {
-    navigator.clipboard.writeText(value);
-  };
-
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (isLoading) return <FullScreenSpinner />;
   if (isError)
     return <p className="text-center text-red-500">Something went wrong.</p>;
-
   if (!data) return null;
+
+  const shortenedAddress = data.address?.address
+    ? `${data.address.address.slice(0, 8)}...${data.address.address.slice(-6)}`
+    : "";
 
   return (
     <QuoteCard>
-      <h2 className="text-lg font-semibold mb-2">
-        Pay with {data.paidCurrency.currency}
+      <h2 className="text-xl font-semibold text-center text-[#0A1628]">
+        Pay with{" "}
+        {CURRENCY_LABELS[data.paidCurrency.currency ?? ""] ||
+          data.paidCurrency.currency}
       </h2>
 
-      <div className="flex justify-between text-sm">
-        <span>Amount due:</span>
-        <span
-          onClick={() => copyToClipboard(String(data.paidCurrency.amount))}
-          className="cursor-pointer text-blue-600 hover:underline"
-        >
+      <p className="text-sm text-center text-[#556877] mt-4 mb-10 max-w-[300px] mx-auto">
+        To complete this payment send the amount due to the{" "}
+        {data.paidCurrency.currency} address provided below.
+      </p>
+
+      <div className="flex justify-between items-center border-y border-[#E2E8F0] py-3 text-sm">
+        <span className="text-[#556877]">Amount due</span>
+        <span className="text-[#0A1628] font-medium flex items-center gap-1">
           {data.paidCurrency.amount} {data.paidCurrency.currency}
+          <CopyText value={String(data.paidCurrency.amount)} display="Copy" />
         </span>
       </div>
 
-      <div className="flex justify-between text-sm">
-        <span>Address:</span>
-        <span
-          onClick={() => copyToClipboard(data.address?.address || "")}
-          className="cursor-pointer text-blue-600 hover:underline break-all text-right"
-        >
-          {data.address?.address}
+      <div className="flex justify-between items-center pt-4 text-sm">
+        <span className="text-[#556877]">
+          {data.paidCurrency.currency} address
+        </span>
+        <span className="text-[#0A1628] font-medium flex items-center gap-1">
+          {shortenedAddress}
+          <CopyText value={data.address?.address || ""} display="Copy" />
         </span>
       </div>
 
-      <div className="flex justify-center py-4">
-        <QRCodeSVG value={data.address?.uri || ""} size={180} />
+      <div className="flex justify-center py-6">
+        <QRCodeSVG value={data.address?.uri || ""} size={140} />
       </div>
 
-      <div className="text-sm text-center text-gray-500">
-        Time left to pay:
-        <br />
-        {countdown}
+      <p className="text-xs text-center text-[#556877] break-all mb-4">
+        {data.address?.address}
+      </p>
+
+      <div className="flex justify-between items-center border-y border-[#E2E8F0] py-3 text-sm">
+        <span className="text-[#556877]">Time left to pay</span>
+        <span className="text-[#0A1628] font-medium">{countdown}</span>
       </div>
     </QuoteCard>
   );

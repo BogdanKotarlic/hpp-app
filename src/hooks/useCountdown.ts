@@ -29,7 +29,9 @@ function getRemaining(timestamp: number | undefined) {
 }
 
 function formatTimeLeft(seconds: number) {
-  const min = Math.floor(seconds / 60);
+  const hrs = Math.floor(seconds / 3600);
+  const min = Math.floor((seconds % 3600) / 60);
   const sec = seconds % 60;
-  return `${min}:${sec.toString().padStart(2, "0")}`;
+
+  return [hrs, min, sec].map((unit) => String(unit).padStart(2, "0")).join(":");
 }
